@@ -1,0 +1,84 @@
+<html color-mode="user">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" type="image/x-icon" href="/static/icon.webp">
+  <link rel="stylesheet" href="https://unpkg.com/mvp.css@1.12/mvp.css">
+  <script src="/static/wasm_exec.js"></script>
+  <script>
+    const go = new Go();
+    WebAssembly.instantiateStreaming(
+      fetch("/static/transfer.wasm"),
+      go.importObject
+    ).then((result) => {
+      go.run(result.instance);
+    });
+  </script>
+</head>
+
+<body>
+  <main>
+    <section>
+      <img src="/static/icon.webp"
+        style="vertical-align: middle; height: 10em; filter: drop-shadow(2px 2px 2px #0a0a0a);" />
+      <h1>
+        <div>Kraken <br /><small>Like The Pirate Bay
+            but for NFTs</small></div>
+      </h1>
+      <hr>
+      <h2>Public Gallery</h2>
+      {{range $collection := .Public}}
+      <header>
+        <h3>{{$collection.Name}} Collection</h3>
+      </header>
+      {{range .Images}}
+      <aside id="{{$collection.Name}}_{{.Name}}"
+        onclick="asyncGetFile({{$collection.Name}}_{{.Name}}_result, '/public/{{$collection.Name}}/{{.Path}}')">
+        <section>
+          <div id="{{$collection.Name}}_{{.Name}}_result"><strong>Click To
+              Reveal<br /><small>{{.Name}}</small></strong>
+          </div>
+        </section>
+      </aside>
+      {{end}}
+      {{end}}
+    </section>
+    <hr>
+    <section>
+      <h2>Private Gallery</h2>
+      {{range $collection := .Private}}
+      <header>
+        <h3>{{$collection.Name}} Collection</h3>
+      </header>
+      {{range .Images}}
+      <aside id="{{$collection.Name}}_{{.Name}}"
+        onclick="asyncGetFile({{$collection.Name}}_{{.Name}}_result, '/private/{{$collection.Name}}/{{.Path}}')">
+        <section>
+          <div id="{{$collection.Name}}_{{.Name}}_result"><strong>Restricted<br /><small>{{.Name}}</small></strong>
+          </div>
+        </section>
+      </aside>
+      {{end}}
+      {{end}}
+    </section>
+    <hr>
+  </main>
+</body>
+<script>
+  var asyncGetFile = async function (card, filename) {
+    if (card.getElementsByTagName('img').length > 0) {
+      return
+    }
+
+    document.body.style.cursor = 'wait'
+    try {
+      card.innerHTML = await getFile(filename, window.location.host);
+    } catch (err) {
+      console.error("Go Error", err);
+      card.innerHTML = "<small style='color: red'>" + err + "</small>";
+    }
+    document.body.style.cursor = 'default'
+  };
+</script>
+
+</html>

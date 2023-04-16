@@ -1,0 +1,3 @@
+.DS_Store
+compressed_assets/*
+cmd/server/server

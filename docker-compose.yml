@@ -1,0 +1,16 @@
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/.htpasswd:/etc/apache2/.htpasswd
+    depends_on:
+      - kraken
+    restart: unless-stopped
+
+  kraken:
+    build:
+      context: .
+    restart: unless-stopped
