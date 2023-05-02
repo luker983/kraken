@@ -35,6 +35,8 @@ The trick is that the server is protecting files with an IP whitelist. If you co
 
 See https://github.com/google/gvisor/blob/e69c018749edd7c42098008ffd14a351060a3150/pkg/tcpip/network/ipv6/ipv6.go#L1095 for why this happens. The packet is sent through the IPv6 path, so is only checked against `::1`. Once it makes it through all of the packet checks, applications parse the address as `127.0.0.1`. Very similar to https://blog.cloudflare.com/cloudflare-handling-bug-interpreting-ipv4-mapped-ipv6-addresses/
 
+Update: I filed a bug report that was addressed shortly after the CTF ended: https://github.com/google/gvisor/commit/ff4f0b9fc52b34f35ee17325572e585ad82e0c79
+
 ## Solution
 
 Query file with address set to IPv4-mapped IPv6 address `::ffff:127.0.0.1`
